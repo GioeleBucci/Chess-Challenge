@@ -5,6 +5,9 @@ using System.Linq;
 
 public class MyBot : IChessBot
 {
+    private static readonly int MAX_DEPTH = 3;
+
+
     private bool earlyGame = true, midGame = false, endGame = false;
     /* An integer that memorises the number of times this "Think" function was called;
      useful to determine the current state of the match. */
@@ -62,7 +65,7 @@ public class MyBot : IChessBot
     }
 
     private void MidGamePolicy(Board board) {
-        MiniMaxAlfaBetaPruning(board, 3, int.MinValue, int.MaxValue, true);
+        MiniMaxAlfaBetaPruning(board, MAX_DEPTH, int.MinValue, int.MaxValue, true);
         //Console.WriteLine("****************************************************************\n\n");
     }
 
@@ -91,13 +94,13 @@ public class MyBot : IChessBot
             {
                 board.MakeMove(move);
                 movesDoneByMiniMax.Push(move);
-                PrettyPrintDebug(depth, 3);
-                Console.WriteLine("Pushed move " + move.ToString() + "at depth " + depth);
+                //PrettyPrintDebug(depth, MAX_DEPTH);
+                //Console.WriteLine("Pushed move " + move.ToString() + "at depth " + depth);
                 int evaluation = MiniMaxAlfaBetaPruning(board, depth - 1, alpha, beta, false);
                 board.UndoMove(move);
                 var popped = movesDoneByMiniMax.Pop();
-                PrettyPrintDebug(depth, 3);
-                Console.WriteLine("Popped move: " + popped.ToString(), ", expected: " + move.ToString());
+                //PrettyPrintDebug(depth, MAX_DEPTH);
+                //Console.WriteLine("Popped move: " + popped.ToString(), ", expected: " + move.ToString());
                 if (!popped.ToString().Equals(move.ToString()))
                 {
                     Console.WriteLine("INCONSISTENCY FOUND!\n\n");
@@ -106,7 +109,8 @@ public class MyBot : IChessBot
                 if (evaluation >= maxEvaluation)
                 {
                     maxEvaluation = evaluation;
-                    moveToDo = move;
+                    if (depth == MAX_DEPTH)
+                        moveToDo = move;
                     //Console.WriteLine("Depth is: " + depth + ", in the MiniMax function the move is: " + moveToDo.ToString() +
                       //" and the move is " + (CheckIfMoveIsStillLegal(board) ? "legal" : "ILLEGAL"));
                 }
@@ -118,13 +122,13 @@ public class MyBot : IChessBot
             {
                 board.MakeMove(move);
                 movesDoneByMiniMax.Push(move);
-                PrettyPrintDebug(depth, 3);
-                Console.WriteLine("Pushed move " + move.ToString() + "at depth " + depth);
+                //PrettyPrintDebug(depth, MAX_DEPTH);
+                //Console.WriteLine("Pushed move " + move.ToString() + "at depth " + depth);
                 int evaluation = MiniMaxAlfaBetaPruning(board, depth - 1, alpha, beta, true);
                 board.UndoMove(move);
                 var popped = movesDoneByMiniMax.Pop();
-                PrettyPrintDebug(depth, 3);
-                Console.WriteLine("Popped move: " + popped.ToString(), ", expected: " + move.ToString());
+                //PrettyPrintDebug(depth, MAX_DEPTH);
+                //Console.WriteLine("Popped move: " + popped.ToString(), ", expected: " + move.ToString());
                 if (!popped.ToString().Equals(move.ToString()))
                 {
                     Console.WriteLine("INCONSISTENCY FOUND!\n\n");
