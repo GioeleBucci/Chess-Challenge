@@ -10,6 +10,7 @@ namespace ChessChallenge.Example {
         int positionsAnalyzed = 0; //debug only
         int prunes = 0; //debug only
         bool isWhite;
+        DebugHelper debugHelper = new DebugHelper();
 
         bool IsTerminalState(Board board) {
             return board.IsDraw() || board.IsInCheckmate();
@@ -39,7 +40,12 @@ namespace ChessChallenge.Example {
                 if (score > best) {
                     best = score;
                     bestMove = move;
-                    if (ply == 0) bestMoveRoot = move;
+                    if (ply == 0) {
+                        bestMoveRoot = move;
+                        board.MakeMove(move);
+                        Console.WriteLine("Best eval: " + Evaluate(board));
+                        board.UndoMove(move);
+                    }
                     //pruning
                     alpha = Math.Max(alpha, score);
                     if (alpha >= beta) break;
@@ -78,9 +84,10 @@ namespace ChessChallenge.Example {
         }
 
         public Move Think(Board board, Timer timer) {
-            isWhite = board.IsWhiteToMove;
-            NegaMax(board, 6, -30000, 30000, 0);
+            debugHelper.BestEngineMove(board, 10, false, "C:\\Users\\gioel\\Desktop\\stockfish\\stockfish-windows-x86-64-avx2.exe");
+            debugHelper.PlayingAs(board);
+            NegaMax(board, 4, -30000, 30000, 0);
             return bestMoveRoot;
-        }
+        }   
     }
 }
